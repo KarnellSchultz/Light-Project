@@ -9,8 +9,8 @@ router.get("/", function (req, res, next) {
   )
     .then((res) => res.json())
     .then((json) => {
-      console.log(json);
-      res.json(json);
+      console.log(json.daily.summary);
+      res.json(json.daily);
     });
 });
 
