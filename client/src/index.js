@@ -3,9 +3,13 @@ import ReactDOM from "react-dom";
 import "./index.css";
 import App from "./App";
 
+import { LocationProvider } from "./location-context";
+
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <LocationProvider>
+      <App />
+    </LocationProvider>
   </React.StrictMode>,
   document.getElementById("root")
 );

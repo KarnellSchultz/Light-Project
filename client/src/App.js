@@ -2,21 +2,29 @@ import React, { useEffect } from "react";
 import { useGeo } from "./Hooks/useGeo";
 import { useDarkSkyEndpoint } from "./Hooks/useDarkSkyEndpoint";
 
-function App() {
-  const [longitude, latitude, status, permissionToggle, permission] = useGeo(
-    false
-  );
-  const [data, setData] = useDarkSkyEndpoint(longitude, latitude);
+import { useLocationDispatch, useLocationState } from "./location-context";
 
+function App() {
+  const [geoState, setStatus, status, loading] = useGeo();
+
+  // const [data, setData] = useDarkSkyEndpoint(longitude, latitude);
+
+  let locationContextState = useLocationState();
+  let locationDispatch = useLocationDispatch();
   useEffect(() => {
-    if (status === "Success" && permission) {
-      setData(longitude, latitude);
+    if (status === "SUCCESS") {
+      locationDispatch({
+        type: "update",
+        payload: {
+          lat: geoState.latitude,
+          lon: geoState.longitude,
+        },
+      });
     }
-    console.log(data);
-  }, [status, permission, setData]);
+  }, [status]);
 
   return (
-    <div className="">
+    <div>
       <header>
         <h1>{`Locate data stuff going here`}</h1>
       </header>
@@ -24,13 +32,22 @@ function App() {
         // disabled={permission}
         onClick={(e) => {
           e.preventDefault();
-          permissionToggle();
+          setStatus("LOADING");
         }}
       >
         {`Geolocate Me`}
       </button>
       <h4>{`Status: ${status}`}</h4>
-      <p>{`${longitude} & ${latitude}`}</p>
+      {/* <p>{`${longitude} & ${latitude}`}</p> */}
+      <button
+        onClick={(e) => {
+          e.preventDefault();
+        }}
+      >
+        💣CLEAR💣
+      </button>
+      <h4>Lat:{locationContextState.lat}</h4>
+      <h4>Lon:{locationContextState.lon}</h4>
     </div>
   );
 }

@@ -1,44 +1,46 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 
-export function useGeo(userPermission) {
-  const [permission, setpermission] = useState(userPermission);
-  const [position, setPosition] = useState({
-    latitude: "",
-    longitude: "",
-  });
+function useGeo(init) {
+  const [geoState, setGeoState] = useState({ latitude: null, longitude: null });
+  const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState("");
-  function permissionToggle() {
-    setpermission((state) => !state);
-  }
-
-  function success(locationData) {
-    const latitudeData = locationData.coords.latitude;
-    const longitudeData = locationData.coords.longitude;
-    setPosition({ latitude: latitudeData, longitude: longitudeData });
-    setStatus("Success");
-  }
-  function error() {
-    setStatus("🤦‍♀️Fuck, there was an error");
-  }
 
   useEffect(() => {
     if (!navigator.geolocation) {
-      return setStatus("Geoloacation is not supported by your browser");
-    }
-
-    if (!permission) {
-      return setStatus("Permissions required");
-    }
-    if (permission) {
-      setStatus("🕵️‍♀️ Loading . . . ");
+      setStatus("Geoloacation is not supported by your browser");
+    } else if (status === "LOADING") {
+      setLoading(true);
       navigator.geolocation.getCurrentPosition(success, error);
     }
-  }, [permission]);
-  return [
-    position.longitude,
-    position.latitude,
-    status,
-    permissionToggle,
-    permission,
-  ];
+  }, [status]);
+
+  function success(position) {
+    const latitude = trimCoordinates(position.coords.latitude);
+    const longitude = trimCoordinates(position.coords.longitude);
+    console.log(latitude, longitude);
+    setGeoState({ latitude: latitude, longitude: longitude });
+    setStatus("SUCCESS");
+    setLoading(false);
+  }
+
+  function error() {
+    setStatus("🚧 There was an Error fam 🚧");
+    setLoading(false);
+  }
+
+  return [geoState, setStatus, status, loading];
 }
+function trimCoordinates(tempNumber) {
+  console.log("trimming:", tempNumber);
+  debugger;
+  let trimmedNumber = null;
+  if (tempNumber !== Number) {
+    return;
+  } else {
+    let numberString = tempNumber.toString();
+    trimmedNumber = Number(numberString.slice(0, 6));
+  }
+  console.log(trimmedNumber);
+}
+
+export { useGeo };
