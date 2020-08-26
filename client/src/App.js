@@ -9,10 +9,11 @@ function App() {
   const [data, setData] = useDarkSkyEndpoint(longitude, latitude);
 
   useEffect(() => {
-    if (status === "Success") {
+    if (status === "Success" && permission) {
       setData(longitude, latitude);
     }
-  }, [status]);
+    console.log(data);
+  }, [status, permission, setData]);
 
   return (
     <div className="">
@@ -20,10 +21,9 @@ function App() {
         <h1>{`Locate data stuff going here`}</h1>
       </header>
       <button
-        disabled={permission}
+        // disabled={permission}
         onClick={(e) => {
           e.preventDefault();
-
           permissionToggle();
         }}
       >
@@ -36,6 +36,3 @@ function App() {
 }
 
 export default App;
-
-//GET LONG AND LATT FROM BROWSER
-// SEND LONG LAT TO SERVER
